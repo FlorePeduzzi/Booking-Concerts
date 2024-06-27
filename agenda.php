@@ -60,7 +60,7 @@ $events = $statement->fetchAll(PDO::FETCH_ASSOC);
                         <div>
                             <?php if (isset($_SESSION["admin"]) && $_SESSION["admin"]) { ?>
                                 <a href="deleteEvent.php?id=<?= $oneEvent['idevent'] ?>" class="btn btn-outline-secondary" style="margin-bottom: 10px;">Supprimer</a>
-                                <a href="modify2.php?id=<?= $oneEvent['idevent'] ?>" class="btn btn-outline-secondary" style="margin-bottom: 10px;">Modifier</a>
+                                <a href="modifyEvent.php?id=<?= $oneEvent['idevent'] ?>" class="btn btn-outline-secondary" style="margin-bottom: 10px;">Modifier</a>
                             <?php } else { ?>
                                 <a href="detailEvent.php?id=<?= $oneEvent['idevent'] ?>" class="btn btn-outline-secondary" style="margin-bottom: 10px;">Billeterie</a>
                             <?php } ?>

@@ -1,13 +1,16 @@
+
 <?php
-session_start();
+
+    include "header.php";
+
 // recuperer l'identifiant du livre
-$idevent=$_GET['id'];
+$iddate=$_GET['id'];
 echo "test";
 
 // stocker dans la session
 if (isset($_SESSION['cart']))  {
     
-    if (in_array( $idevent ,$_SESSION['cart']  )) {
+    if (in_array( $iddate ,$_SESSION['cart']  )) {
         echo "test";
         //echo "le produit est déjà dans le panier";
         // recupere le panier existant dans une variable 
@@ -18,23 +21,26 @@ if (isset($_SESSION['cart']))  {
         // 2 on recuperer la clé correspondant au produit 
         // sur lequel on veut recherche une quantité
         
-        $cart[$idevent]=$cart[$idevent]+1;
+        $cart[$iddate]=$cart[$iddate]+1;
         // sauvegarde en session
         $_SESSION['cart']=$cart;
     }
 
     else {
-        $_SESSION['cart'][$idevent]=1;
+        $_SESSION['cart'][$iddate]=1;
             
     }
 }
 else {
     echo "test";
-    $_SESSION['cart'][$idevent]=1;
+    $_SESSION['cart'][$iddate]=1;
 
 }
-echo "<pre>";
-var_dump($_SESSION['cart']);
-echo "</pre>";
 
-header("Location: cart.php");
+
+header("Location: cart.php?id=<?=$iddate?>");
+
+
+
+    include "footer.php";
+?>

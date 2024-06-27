@@ -41,7 +41,8 @@ if (empty($_GET['search'])) {
                         <?php
                         $statementDates = $pdo->prepare("SELECT date.date, date.time
                                             FROM date
-                                            WHERE date.idevent = :idevent");
+                                            WHERE date.idevent = :idevent
+                                            ORDER BY date.date ASC"); // Tri par ordre croissant
                         $statementDates->bindValue(':idevent', $oneEvent['idevent'], PDO::PARAM_INT);
                         $statementDates->execute();
                         $dates = $statementDates->fetchAll(PDO::FETCH_ASSOC);
@@ -59,39 +60,37 @@ if (empty($_GET['search'])) {
                 </div>
             </div>
         </div>
+        <script>
+            // JavaScript pour initialiser le calendrier pour chaque événement
+            document.addEventListener('DOMContentLoaded', function() {
+                let calendarEl<?= $oneEvent['idevent'] ?> = document.getElementById('calendar<?= $oneEvent['idevent'] ?>');
+
+                let calendar<?= $oneEvent['idevent'] ?> = new FullCalendar.Calendar(calendarEl<?= $oneEvent['idevent'] ?>, {
+                    initialView: 'dayGridMonth',
+                    initialDate: '<?= $dates[0]['date'] ?>', // Utilisez la première date du concert
+                    events: [
+                        <?php foreach ($dates as $date) { ?> {
+                                title: '<?= $oneEvent['eventName'] ?>',
+                                start: '<?= $date['date'] ?>', // Date à colorer en vert
+                                backgroundColor: 'green'
+                            },
+                        <?php } ?>
+                    ],
+                    eventClick: function(info) {
+                        // Rediriger vers la page de réservation lorsque l'utilisateur clique sur un événement
+                        window.location.href = "addcart.php";
+                    },
+                    locale: 'fr', // Définir la locale en français
+                    dayHeaderFormat: { weekday: 'narrow' } // Formater le format d'en-tête de jour
+                });
+
+                calendar<?= $oneEvent['idevent'] ?>.render();
+            });
+        </script>
     <?php } ?>
 </section>
 
 <?php } ?>
-
-<script>
-    // JavaScript pour initialiser le calendrier pour chaque événement
-    <?php foreach ($events as $oneEvent) { ?>
-        document.addEventListener('DOMContentLoaded', function() {
-    let calendarEl<?= $oneEvent['idevent'] ?> = document.getElementById('calendar<?= $oneEvent['idevent'] ?>');
-
-    let calendar<?= $oneEvent['idevent'] ?> = new FullCalendar.Calendar(calendarEl<?= $oneEvent['idevent'] ?>, {
-        initialView: 'dayGridMonth',
-        events: [
-            <?php foreach ($dates as $date) { ?> {
-                    title: '<?= $oneEvent['eventName'] ?>',
-                    start: '<?= $date['date'] ?>', // Date à colorer en vert
-                    backgroundColor: 'green'
-                },
-            <?php } ?>
-        ],
-        eventClick: function(info) {
-            // Rediriger vers la page de réservation lorsque l'utilisateur clique sur un événement
-            window.location.href = "addcart.php";
-        },
-        locale: 'fr', // Définir la locale en français
-        dayHeaderFormat: { weekday: 'narrow' } // Formater le format d'en-tête de jour
-    });
-
-    calendar<?= $oneEvent['idevent'] ?>.render();
-});
-    <?php } ?>
-</script>
 
 <?php
 include "footer.php";

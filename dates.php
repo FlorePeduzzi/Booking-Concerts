@@ -59,7 +59,7 @@ $events = $statementEvents->fetchAll(PDO::FETCH_ASSOC);
                                             ?>
                                             <p><?= $date['date'] ?> <?= $date['time'] ?></p>
                                         <?php } ?>
-                                        <button class="btn btn-outline-secondary" style="margin-bottom: 10px;">Réservez</button>
+                                        <a href="detailEvent.php?id=<?= $oneEvent['idevent'] ?>" class="btn btn-outline-secondary" style="margin-bottom: 10px;">Réservez</a>
                                         <h4 class="price"><?= $oneEvent['price'] ?>€</h4>
                                     </div>
                                 </div>

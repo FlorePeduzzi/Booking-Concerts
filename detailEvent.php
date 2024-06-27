@@ -5,7 +5,7 @@ $id = $_GET['id'];
 
 $pdo = new \PDO('mysql:host=localhost;dbname=DonkeyEvent', 'root');
 
-$statement = $pdo->prepare("SELECT *, DATE_FORMAT(date.time, '%H:%i') AS time_formatted FROM event JOIN date ON event.idevent = date.idevent WHERE event.idevent = :id");
+$statement = $pdo->prepare("SELECT *, DATE_FORMAT(date.time, '%H:%i') AS time_formatted FROM event JOIN date ON event.idevent = date.idevent WHERE event.idevent = :id ORDER BY date.date ASC");
 $statement->bindParam(':id', $id, PDO::PARAM_INT);
 $statement->execute();
 $events = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -16,7 +16,7 @@ $statement2 = $pdo->prepare("SELECT name FROM artist
 $statement2->bindParam(':id', $id, PDO::PARAM_INT);
 $statement2->execute();
 $artists = $statement2->fetchAll(PDO::FETCH_ASSOC);
-     
+
 // Créer un tableau de dates à passer à JavaScript
 $dates_vertes = [];
 $dates_rouges = [];
@@ -42,48 +42,32 @@ $iddates_json = json_encode($iddates);
 ?>
 
 
-
-
-
-<body>
-    <section class="detailEvent">
-        <div class="detailcontainer">
-            <div class="event-card">
-                <div class="event-image"><img src="<?= $event['picture'] ?>" class="eventPicture"></div>
-                <div class="event-details">
-                    <div>
-                        <h4><?= $events[0]['eventName'] ?></h4>
-                        <p class="event-info"><?= $events[0]['category'] ?><br>
-                            Artiste(s) : <br>
-                             <?php foreach($artists as $artist){?>
-                                <?=$artist['name']?>
-                            <?php
-                             }
-                             ?>
-                        
-                        <p>Date(s) : <br>
-                            <?php foreach ($events as $event) { 
-                                        ?>
-                                <?= $event['date'].': '.$event['time_formatted']?></p>
-                            <?php
-                            }
-                        
-                            ?>
-                        </p>
-                    </div>
-                    <div>
-                    <button type="button" class="btn btn-secondary" disabled>Cliquez sur une date du calendrier pour réserver</button>
-                    </div>
+<section class="detailEvent" style="display: flex; justify-content: center;">
+    <div class="detailcontainer" style="width: 80%;">
+        <div class="event-card" style="width: 100%;">
+            <div class="event-image"><img src="<?= $event['picture'] ?>" style="width: 100%;" ;></div>
+            <div class="event-details" style="display: flex; flex-direction: row; width: 100%;">
+                <div style="flex-grow: 1;">
+                    <h4><?= $events[0]['eventName'] ?></h4>
+                    <p class="event-info"><?= $events[0]['category'] ?><br>
+                        <?php foreach ($artists as $artist) { ?>
+                            <?= $artist['name'] ?></p>
+                        <?php } ?>
+                    <p>Date(s) : <br>
+                        <?php foreach ($events as $event) { ?>
+                            <?= $event['date'] . ': ' . $event['time_formatted'] ?></p>
+                        <?php } ?>
                     <div>
                         <span class="price"><?= $events[0]['price'] ?>€</span>
                     </div>
                 </div>
-                <div id='calendar' style='margin-left: 200px;'></div>
+                <div id="calendar" style="margin-left: 20px;"></div>
             </div>
         </div>
+    </div>
+</section>
 
-    </section>
-    <script>
+<script>
     // Récupérer les données JSON dans JavaScript
     let datesVertes = <?php echo $dates_vertes_json; ?>;
     let datesRouges = <?php echo $dates_rouges_json; ?>;
@@ -93,41 +77,40 @@ $iddates_json = json_encode($iddates);
         let calendarEl = document.getElementById('calendar');
 
         let calendar = new FullCalendar.Calendar(calendarEl, {
-            
+
             initialView: 'dayGridMonth',
+            initialDate: datesVertes[0],
             locale: 'fr',
             events: [
-                <?php foreach ($dates_vertes as $key => $date) { ?>
-                    {   
+                <?php foreach ($dates_vertes as $key => $date) { ?> {
                         title: '<?= $events[$key]['eventName'] ?>',
                         start: '<?= $date ?>', // Date à colorer en vert
-                        url: '<?= "addcart.php?id=".$iddates[$key] ?>', // Assigning iddate to the event object
+                        url: '<?= "addcart.php?id=" . $iddates[$key] ?>', // Assigning iddate to the event object
                         backgroundColor: 'green',
-                        
+
                     },
                 <?php } ?>
-                <?php foreach ($dates_rouges as $key => $date) { ?>
-                    {
+                <?php foreach ($dates_rouges as $key => $date) { ?> {
                         title: 'Complet',
                         start: '<?= $date ?>', // Date à colorer en rouge
                         backgroundColor: 'red',
-                        
+
                     },
                 <?php } ?>
             ],
             eventClick: function(info) {
-                // Redirect to addcart.php when clicking on a green date
+                // Redirect to booking.php when clicking on a green date
                 if (info.event.backgroundColor === 'green') {
-                    window.location.href = info.event.url ;
+                    window.location.href = info.event.url;
                 }
             }
         });
 
         calendar.render();
     });
-
-    
 </script>
+
+
 
 <?php
 include "footer.php";

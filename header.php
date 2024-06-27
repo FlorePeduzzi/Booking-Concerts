@@ -75,12 +75,14 @@
 
     if (isset($_SESSION["user"])) {
         echo $_SESSION["user"] . " vous êtes connecté(e)";
-        $statement = $pdo->prepare("SELECT iduser FROM user WHERE iduser = :iduser");
-        $statement->bindValue(':iduser', $_SESSION["user"], PDO::PARAM_INT);
+        $email = $_SESSION["user"];
+        $statement = $pdo->prepare("SELECT iduser FROM user WHERE email = :email");
+        $statement->bindValue(':email', $email, PDO::PARAM_STR);
         $statement->execute();
         $iduser = $statement->fetchColumn();
         $_SESSION['iduser'] = $iduser;
     }
+
 
 
 
